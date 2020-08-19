@@ -1,0 +1,148 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>jQuery Easy Number Animate Plugin Demo</title>
+  <link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <style>
+body { background-color: #ccc; }
+.container { margin: 150px auto; max-width: 400px; }
+
+    .number {
+      font: bold 10vh monospace;
+      padding: 30px;
+    }
+
+    .number.end_value {
+      color: #00BD8A;
+    }
+
+    .number.start_value {
+      color: #FF0000;
+    }
+    input { margin: 20px 0; }
+  </style>
+</head>
+<body>
+  <div id="jquery-script-menu">
+<div class="jquery-script-center">
+<ul>
+<li><a href="https://www.jqueryscript.net/animation/Number-Count-Up-Down-Animation-jQuery.html">Download This Plugin</a></li>
+<li><a href="https://www.jqueryscript.net/">Back To jQueryScript.Net</a></li>
+</ul>
+<div class="jquery-script-ads"><script type="text/javascript"><!--
+google_ad_client = "ca-pub-2783044520727903";
+/* jQuery_demo */
+google_ad_slot = "2780937993";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="https://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script></div>
+<div class="jquery-script-clear"></div>
+</div>
+</div>
+  <div class='container'>
+    <div class='input_group'>
+      <input class='start_value form-control' type='number' placeholder='Enter a start value' value='0' step='100'/>
+      <button class='up btn btn-primary'>Animate Up</button>
+    </div>
+    <div class='button_group'>
+      <input class='end_value form-control' type='number' placeholder='Enter an end value' value='1000000' step='100'/>
+      <button class='down btn btn-danger'>Animate Down</button>
+    </div>
+
+
+  <h1 class='number start_value'>0</h1>
+    </div>
+  <script src='https://code.jquery.com/jquery-3.3.1.slim.min.js'></script>
+  <script src='dist/jquery.easy_number_animate.js'></script>
+  <script>
+    $(function()
+    {
+      var $number       = $('.number')
+          ,$start_input = $('.start_value')
+          ,$end_input   = $('.end_value')
+          ,$button_up   = $('.up')
+          ,$button_down = $('.down')
+          ;
+
+      function get_start_value()
+      {
+        return parseFloat($start_input.val());
+      }
+
+      function get_end_value()
+      {
+        return parseFloat($end_input.val());
+      }
+
+      function remove_classes()
+      {
+        $number.removeClass('start_value end_value');
+      }
+
+      function add_end_class()
+      {
+        remove_classes();
+        $number.addClass('end_value');
+      }
+
+      function add_start_class()
+      {
+        remove_classes();
+        $number.addClass('start_value');
+      }
+
+      function up()
+      {
+        var options = {
+          start_value: get_start_value()
+          ,end_value: get_end_value()
+          ,duration: 5000
+          ,before: remove_classes
+          ,after: add_end_class
+        };
+
+        $number.easy_number_animate(options);
+      }
+
+      function down()
+      {
+        var options = {
+          start_value: get_end_value()
+          ,end_value: get_start_value()
+          ,duration: 3000
+          ,before: remove_classes
+          ,after: add_start_class
+        };
+
+        $number.easy_number_animate(options);
+      }
+
+      $button_up.click(up);
+      $button_down.click(down);
+    });
+  </script>
+  <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-36251023-1']);
+  _gaq.push(['_setDomainName', 'jqueryscript.net']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>
+

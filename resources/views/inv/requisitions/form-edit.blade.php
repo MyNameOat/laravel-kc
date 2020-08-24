@@ -26,25 +26,28 @@
             @foreach ($requisitions as $requisition)
                 <div class="ibox-content col-lg-12">
                     <div class="row" style="margin-bottom: 20px;">
-                        <div class="col-lg-4">
+                        <div class="col-lg-12">
                             <span>
                                 <h2>ใบเบิกสินค้า เลขที่ ({{ $requisition->code }})</h2>
-                                <input type="text" name="requisition_id" value="{{ $requisition->id }}">
+                                <input type="hidden" name="requisition_id" value="{{ $requisition->id }}">
                             </span>
+                        </div>
+                        <div class="col-lg-4">
+
                         </div>
                         <div class="col-lg-4">
                             <label>วันที่เอกสาร ::
                                 {{ $document_at  = date("d/m/Y") }}
                                 <input type="hidden" name="document_at" value="{{ $document_at  }}">
-                            </label>
+                            </label><br>
+                            <label>คลังเก็บสินค้า :: {{ $requisition->warehouse->name }}
+                                <input type="hidden" name="warehouse_id" value="{{ $requisition->warehouse->id }}">
+                            </label><br>
+                            ผู้บันทึก ::{{ $requisition->createUser->name }}
+                            <input type="hidden" name="user_id" value="{{ $requisition->createUser->id }}" readonly>
                         </div>
                         <div class="col-lg-4">
-                            <label>คลังเก็บสินค้า :: {{ $requisition->warehouse->name }}
-                                {{ $warehouse_id = session('warehouse')['id'] }}
-                                <input type="hidden" name="warehouse_id" value="{{ $requisition->warehouse->id }}">
-                            </label>
-                            ผู้บันทึก ::{{ $requisition->createUser->name }}
-                            <input type="text" name="user_id" value="{{ $requisition->createUser->id }}" readonly>
+
                         </div>
                         <div class="row">
                             <div class="col-lg-12">
@@ -78,7 +81,7 @@
                                 {{-- <button type="button" onclick="onSubmitRequisition()" id="buttonSubmit" class="btn btn-primary">บันทึก</button> --}}
                                 <button type="submit" class="btn btn-primary waves-effect">บันทึก</button>
                                 <button class="btn btn-danger waves-effect ajaxify" type="button"
-                                onclick="location.href='{{ route('inv.approve-detail', $requisition->id) }}'">ยกเลิก{{$requisition->id}}</button>
+                                onclick="location.href='{{ route('inv.approve-detail', $requisition->id) }}'">ยกเลิก</button>
                             </span>
                         </div>
                     </div>

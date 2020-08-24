@@ -2,26 +2,24 @@
 @extends('layouts-inv.app')
 @section('content')
 
-
-<div class="row wrapper wrapper bg-white animated fadeInRight">
-    <div class="ibox">
-        <div class="col-lg-12">
-            <div class="ibox-title" style="height:120px;" style="margin-bottom: 20px;">
-                <div class="col-lg-6">
-                    <span><h2>ใบเบิกสินค้า</h2>
-                    <span>หน้าหลัก/ใบเบิกทั้งหมด</span>
-                </div>
-                <div class="col-lg-6"><br>
-                    <span class="pull-right">
-                        <a href="{{ route('inv.form-create') }}" class="btn btn-primary">
-                        <h4>สร้างใบเบิกสินค้า</h4>
-                        </a>
-                    </span>
-                </div>
-            </div>
+<div class="row">
+    <div class="ibox wrapper wrapper bg-white animated fadeInRight">
+        <div class="ibox-title" style="height: 120px; margin-top: 5px;">
+            <span><h2>ใบเบิกสินค้า</h2></span>
+            <ol class="breadcrumb">
+                <li class="breadvrumb-item"><a href="{{ route('inv.index') }}">หน้าหลัก</a></li>
+                /
+                <strong class="breadvrumb-item active" style="margin-top: 10px;">ใบเบิกสินค้าทั้งหมด</strong>
+            </ol>
+            <span class="pull-right">
+                {{-- <a href="{{ route('inv.form-create') }}" class="btn btn-primary">
+                <h4>สร้างใบเบิกสินค้า</h4>
+                </a> --}}
+            </span>
         </div>
     </div>
 </div>
+
 <div class="row wrapper wrapper bg-white animated fadeInRight">
     <div class="ibox" style="margin-top: 30px;">
         <div class="col-lg-12">
@@ -29,6 +27,11 @@
                 <label style="background-color: white;">
                     <h3>รายการสินค้า</h3>
                 </label>
+                <span class="pull-right">
+                    <a href="{{ route('inv.form-create') }}" class="btn btn-primary">
+                    <h4>สร้างใบเบิกสินค้า</h4>
+                    </a><br><br>
+                </span>
                 <table class="table table-bordered">
                     <thead>
                         <tr>

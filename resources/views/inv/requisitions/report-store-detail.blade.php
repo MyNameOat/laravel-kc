@@ -5,11 +5,15 @@
 @extends('layouts-inv.app')
 @section('content')
 
-<div class="row wrapper wrapper bg-white animated fadeInRight">
-    <div class="ibox">
-        <div class="ibox-title">
-            <p><h3>สร้างใบเบิกสินค้า</h3><p>
-            <span>หน้าหลัก/สร้างใบเบิกสินค้า</span>
+<div class="row">
+    <div class="ibox wrapper wrapper bg-white animated fadeInRight">
+        <div class="ibox-title" style="height: 120px; margin-top: 5px;">
+            <span><h2>ใบเบิกสินค้า</h2></span>
+            <ol class="breadcrumb">
+                <li class="breadvrumb-item"><a href="{{ route('inv.index') }}">หน้าหลัก</a></li>
+                /
+                <strong class="breadvrumb-item active" style="margin-top: 10px;">รายละเอียดใบเบิก</strong>
+            </ol>
         </div>
     </div>
 </div>
@@ -28,7 +32,7 @@
                         แก้ไขใบเบิกสินค้า
                     </a>
                     <a href="{{ route('inv.delete-store', $requisition->id) }}" class="btn btn-danger waves-effect" style="font-size: 14px;" data-method="delete" data-confirm="ยืนยันการยกเลิกใบเบิกสินค้า">
-                        ยกเลิกใบเบิกสินค้า {{ $requisition->id }}
+                        ยกเลิกใบเบิกสินค้า
                     </a>
                 </span>
             </div>
@@ -39,31 +43,21 @@
                 <div class="ibox-content col-lg-12">
                     <div class="row" style="margin-bottom: 20px;">
                         <div class="col-lg-4">
-                            <label>วันที่เอกสาร :: {{ $document_at = $requisition->document_at }}
+
+                        </div>
+                        <div class="col-lg-4">
+                            วันที่เอกสาร :: {{ $document_at = $requisition->document_at }}
                                 {{-- {{ $document_at  = date("d/m/Y") }} --}}
-                                <input type="hidden" name="document_at" value="{{ $document_at  }}">
-                            </label>
-                        </div>
-                        <div class="col-lg-4">
+                            <p><input type="hidden" name="document_at" value="{{ $document_at  }}"></p>
                             <p>เบิกเพื่อ :: {{ $requisition->take->name }}</p>
-                            <p>เบิกเพื่อ :: <br>
-                                <select name="take_id">
-                                    <option value="{{ $requisition->take->id }}">{{ $requisition->take->name }}</option>
-                                    @foreach($take_lists as $take_list)
-                                    {
-                                        <option value="{{ $take_list->id }}">{{ $take_list->name }}</option>
-                                        @endforeach
-                                    }
-                                </select>
-                            </p>
                             <p>หมายเหตุ :: {{ $requisition->detail }}</p>
-                            <label>คลัง :: {{ $requisition->warehouse->name }}
-                                <input type="hidden" name="warehouse_id" value="{{ $requisition->warehouse->name }}">
-                            </label>
+                            <p>คลัง :: {{ $requisition->warehouse->name }}</p>
+                            <input type="hidden" name="warehouse_id" value="{{ $requisition->warehouse->name }}">
+                            <p>ผู้บันทึก :: {{ $user = auth()->user()->name }}</p>
+                            <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
                         </div>
                         <div class="col-lg-4">
-                            ผู้บันทึก :: {{ $user_create = auth()->user()->name }}
-                            <input type="้hidden" name="user_create" value="{{ auth()->user()->id }}">
+
                         </div>
                     </div>
                 </div>

@@ -5,40 +5,36 @@
 @section('content')
 
 <div class="row">
-    <div class="row wrapper wrapper bg-white animated fadeInRight">
-        <div class="ibox-title" style="height:120px;">
-            <div class="col-lg-6">
-                <span><h2>ใบเบิกสินค้า</h2>
-                <span>หน้าหลัก/ใบเบิกทั้งหมด</span>
-            </div>
-            <div class="col-lg-6"><br>
-                <span class="pull-right">
-
-                </span>
-            </div>
+    <div class="ibox wrapper wrapper bg-white animated fadeInRight">
+        <div class="ibox-title" style="height: 120px; margin-top: 5px;">
+            <span><h2>ใบเบิกสินค้า</h2></span>
+            <ol class="breadcrumb">
+                <li class="breadvrumb-item"><a href="{{ route('inv.index') }}">หน้าหลัก</a></li>
+                /
+                <strong class="breadvrumb-item active" style="margin-top: 10px;">สร้างใบเบิกสินค้า</strong>
+            </ol>
         </div>
     </div>
 </div>
 <div class="row wrapper wrapper bg-white animated fadeInRight">
-    <div class="ibox" style="margin-top: 30px;">
+    <div class="ibox" style="margin-top: 15px;">
         <form action="{{ route('inv.save-store') }}" method="POST" id="form" class="form-horizontal">
             @csrf
             <div class="ibox-content col-lg-12">
-                <div class="row" style="margin-bottom: 20px;">
+                <div class="row" style="margin-bottom: 10px;">
                     <div class="col-lg-4">
-                        <label>วันที่เอกสาร ::
-                            {{-- {{ $document_at  = date('d/m/Y') }} --}}
-                            <input type="text" name="document_at" value="{{  date('d/m/Y')  }}">
-                        </label>
+                        <h4>วันที่เอกสาร :: {{ $document = date("d/m/Y") }}</h4>
+                            <input type="hidden" name="document_at" value="{{ $document }}">
                     </div>
                     <div class="col-lg-4">
-                        <label>คลังเก็บสินค้า ::
-                            {{ $warehouse_id = session('warehouse')['id'] }}
-                            <input type="hidden" name="warehouse_id" value="{{ $warehouse_id }}">
-                        </label>
+                        {{-- <label>คลังเก็บสินค้า ::
+                            {{ $warehouse_name = session('warehouse')['name'] }}
+                        </label> --}}
+                        {{-- {{ $warehouse_id = session('warehouse')['id'] }} --}}
+                        <input type="hidden" name="warehouse_id" value="{{ $warehouse_id = session('warehouse')['id'] }}">
                     </div>
                     <div class="col-lg-4">
-                        ผู้บันทึก :: {{ auth()->user()->name }}
+                        {{-- ผู้บันทึก :: {{ auth()->user()->name }} --}}
                         <input type="hidden" name="user_create" value="{{ auth()->user()->id }}">
                     </div>
                 </div>

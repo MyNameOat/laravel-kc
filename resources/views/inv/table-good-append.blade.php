@@ -1,4 +1,4 @@
-<div class="tabs-container" style="margin-top: 40px; width:90%;">
+<div class="tabs-container" style="margin-top: 40px;">
     <ul class="nav nav-tabs" role="tablist">
         <li class="active"><a href="#detail" aria-controls="detail" role="tab" data-toggle="tab">รายการสินค้า</a></li>
         <span class="pull-right">

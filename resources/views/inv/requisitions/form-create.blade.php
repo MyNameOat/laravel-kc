@@ -47,6 +47,8 @@
                         <div class="ibox wrapper wrapper bg-white animated fadeInRight">
                             {{-- Table Good Append  --}}
                             @include('inv.table-good-append')
+
+                            @include('inv.modal-good-select')
                         </div>
                     </div>
                 </div>

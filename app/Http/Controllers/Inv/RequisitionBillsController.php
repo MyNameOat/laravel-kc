@@ -198,46 +198,146 @@ class RequisitionBillsController extends Controller
         return view('inv.requisitions.form-edit', compact('requisitionGoods', 'requisitions','types','takes'));
     }
 
-    public function updateStore(Request $request)
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+
+     public function testupdateStoress(RequisitionRequest $request, $id)
     {
-        //เหลือจำนวนในตาราง กับแก้ไข,ลบเพิ่มสินค้ายังไม่ได้
-        // return $request;
+        dd($request, $id);
         DB::beginTransaction();
-        // $timenow = date('H:i:s');
 
-        $edit_requisition = Requisition::where('id', $request->requisition_id)
-        ->update([
-            'document_at' => Carbon::createFromFormat('d/m/Y', $request->document_at),
-            'take_id' => $request->edit_take_id,
-            'detail' => $request->edit_detail
-        ]);
-        $warehouse = Warehouse::find($request->edit_warehouse_id);
-        // $row = RequisitionGood::where('requisition_id', $request->requisition_id)->first();
-            // return $edit_requisition_goods;
-            // $id = $edit_requisition_goods->id;
+        $old_requisition = Requisition::find($id);
+        $old_requisition->user_id = auth()->user()->id;
+        $old_requisition->edit_at = Carbon::now();
+        $old_requisition->save();
 
-        foreach($request->warehouse_good_id as $key => $value)
-        {
-            $warehouse_good = WarehouseGood::find($value);
-            // $requisition_good = RequisitionGood::find($value);
-            // $requisition_goods = Warehouse::find($value);
-
-            $edit_requisition_good = RequisitionGood::where('requisition_id', $request->requisition_id)
-            ->update([
-                'good_id' => $request->good_id[$key],
-                'amount' => $request->good_balance_amount[$key],
-                'unit_id' => $request->good_unit_id[$key]
-            ]);
-            $edit_warehouse_good_balance = WarehouseGoodBalance::where('requisition_good_id', $value)
-            ->update([
-                'amount' => - $request->good_balance_amount[$key]
-            ]);
+        foreach ($old_requisition->requisitionGoods as $requisitionGood) {
+            $requisitionGood->warehouseGood->reduceSkus()->delete();
+            $requisitionGood->warehouseGood()->delete();
+            $requisitionGood->delete();
         }
-            // return $warehouse_good;
+
+        $input = $request->all();
+
+        $warehouse = Warehouse::find($input['warehouse_id']);
+
+        $input['code'] = $old_requisition->code;
+        $input['parent_id'] = $old_requisition->id;
+        $input['document_at'] = Carbon::createFromFormat('d/m/Y', $input['document_at']);
+        $input['department_id'] = $warehouse->department_id;
+        $input['warehouse_id'] = $warehouse->id;
+        $input['created_user_id'] = session('user')['id'];
+
+        $requisition = Requisition::create($input);
+
+        foreach ($input['good_id'] as $key => $value) {
+            $warehouse_good = WarehouseGood::find($value);
+
+            $data = [];
+            $data['requisition_id'] = $requisition->id;
+            $data['warehouse_good_id'] = $warehouse_good->id;
+            $data['good_id'] = $warehouse_good->good_id;
+            $data['amount'] = $input['amount'][$key];
+            $data['unit_id'] = ($warehouse_good->good->type->is_coil == 1 ? 2 : $warehouse_good->good->unit_id);
+            $data['cost_per_unit'] = 0;
+            $data['cost'] = 0;
+            $requisition_good = RequisitionGood::create($data);
+
+            if ($warehouse_good->good->type->is_coil == 1) {
+                $balance_warehouse_goods = BalanceWarehouseGood::where('warehouse_id', $warehouse->id)->where('good_id', $warehouse_good->good_id)->where('coil_code', $warehouse_good->coil_code)->where('balance', null)->orWhere('warehouse_id', $warehouse->id)->where('good_id', $warehouse_good->good_id)->where('coil_code', $warehouse_good->coil_code)->where('balance', '>', 0)->get();
+            } else {
+                $balance_warehouse_goods = BalanceWarehouseGood::where('warehouse_id', $warehouse->id)->where('good_id', $warehouse_good->good_id)->where('balance', null)->orWhere('warehouse_id', $warehouse->id)->where('good_id', $warehouse_good->good_id)->where('balance', null)->where('balance', '>', 0)->get();
+            }
+
+            $new_warehouse_good = new WarehouseGood;
+            $new_warehouse_good->warehouse_id = $warehouse->id;
+            $new_warehouse_good->good_id = $balance_warehouse_goods->last()->good_id;
+            $new_warehouse_good->amount = bcmul(-1.00, $input['amount'][$key], 2);
+            $new_warehouse_good->requisition_good_id = $requisition_good->id;
+            if ($warehouse_good->good->type->is_coil == 1) {
+                $new_warehouse_good->coil_code = $balance_warehouse_goods->last()->coil_code;
+                $new_warehouse_good->core_id = $balance_warehouse_goods->last()->core_id;
+                $new_warehouse_good->core_weight = $balance_warehouse_goods->last()->core_weight;
+                $new_warehouse_good->total_weight = $balance_warehouse_goods->last()->total_weight;
+                $new_warehouse_good->total_length = $balance_warehouse_goods->last()->total_length;
+                $new_warehouse_good->balance_weight = $balance_warehouse_goods->last()->balance_weight;
+                $new_warehouse_good->balance_length = $balance_warehouse_goods->last()->balance_length;
+            }
+            $new_warehouse_good->save();
+
+            $amount = $input['amount'][$key];
+
+            foreach ($balance_warehouse_goods as $balance_warehouse_good) {
+                $balance = $balance_warehouse_good->balance == null ? $balance_warehouse_good->amount : $balance_warehouse_good->balance;
+                if ($balance >= $amount) {
+                    $sku = new Sku;
+                    $sku->reduce_warehouse_good_id = $new_warehouse_good->id;
+                    $sku->stock_warehouse_good_id = $balance_warehouse_good->id;
+                    $sku->amount = $amount;
+                    $sku->save();
+
+                    $amount = 0;
+                } else {
+                    $sku = new Sku;
+                    $sku->reduce_warehouse_good_id = $new_warehouse_good->id;
+                    $sku->stock_warehouse_good_id = $balance_warehouse_good->id;
+                    $sku->amount = $balance;
+                    $sku->save();
+
+                    $amount = $amount - $balance;
+                }
+
+                if ($amount == 0) {
+                    break;
+                }
+            }
+        }
 
         DB::commit();
 
         return redirect()->route('inv.index');
+    }
+
+    public function updateStore(Request $request)
+    {
+            // return $request;
+            DB::beginTransaction();
+            $requisitions = Requisition::where('id', $request->requisition_id)
+            ->update(['document_at' => Carbon::createFromFormat('d/m/Y', $request->document_at),
+            'take_id' => $request->take_id,
+            'detail' => $request->detail
+            ]);
+
+            foreach($request->good_id as $key => $value)
+            {
+
+                $good_id = RequisitionGood::find($value);
+
+                $requisition_good = RequisitionGood::where('good_id', $value)
+                ->update([
+                    'amount' => $request->amount[$key],
+                    'unit_id' => $request->unit_id[$key],
+                    'good_id' => $request->good_id[$key]
+
+                ]);
+
+                // $warehouse_good_balance = WarehouseGoodBalance::where('id', $request->warehouse_good_id)
+                // ->update([
+                    // 'amount' => $request->amount[$key]
+                    // ]);
+
+
+            }
+
+            DB::commit();
+
+            return redirect()->route('inv.index');
+
     }
 
     public function deleteStore($id_bill){

@@ -21,7 +21,7 @@
 </div>
 <div class="row wrapper wrapper bg-white animated fadeInRight">
     <div class="ibox" style="margin-top: 30px;">
-        <form action="{{ route('inv.update-store') }}" method="POST">
+        <form action="{{ route('inv.update-store') }}"  method="POST">
             @csrf
             @foreach ($requisitions as $requisition)
                 <div class="ibox-content col-lg-12">
@@ -41,16 +41,18 @@
                         <div class="col-lg-4">
                             <label>คลังเก็บสินค้า :: {{ $requisition->warehouse->name }}
                                 {{ $warehouse_id = session('warehouse')['id'] }}
-                                <input type="hidden" name="edit_warehouse_id" value="{{ $requisition->warehouse->id }}">
+                                <input type="hidden" name="warehouse_id" value="{{ $requisition->warehouse->id }}">
                             </label>
                             ผู้บันทึก ::{{ $requisition->createUser->name }}
-                            <input type="text" name="edit_user_id[]" value="{{ $requisition->createUser->id }}" readonly>
+                            <input type="text" name="user_id" value="{{ $requisition->createUser->id }}" readonly>
                         </div>
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="ibox wrapper wrapper bg-white animated fadeInRight">
                                     {{-- Table Good Append  --}}
                                     @include('inv.table-good-append')
+                                    {{-- Modal Select Good --}}
+                                    @include('inv.modal-good-select')
                                 </div>
                             </div>
                         </div>
@@ -60,7 +62,7 @@
                             </span><br>
                             <label>ประเภทการเบิก <font color="red">*</font></label><br>
 
-                            <select class="form-control" name="edit_take_id" value="{{ $requisition->take->id }}">
+                            <select class="form-control" id="take_id" name="take_id" value="{{ $requisition->take->id }}">
                                     <option value="{{ $requisition->take->id }}">-- {{ $requisition->take->name }} --</option>
                                 @foreach ($takes as $take)
                                     <option value="{{ $take->id }}">{{ $take->name }}</option>
@@ -68,7 +70,7 @@
                             </select><br>
 
                             <label>หมายเหตุ</label><br>
-                            <textarea style="width: 100%" name="edit_detail" cols="122" rows="6"
+                            <textarea style="width: 100%" name="detail" cols="122" rows="6"
                                 value="{{ $requisition->detail }}">{{ $requisition->detail }}
                             </textarea>
 
@@ -131,14 +133,14 @@
     }
 
     function onSubmitRequisition(button) {
-		$('#buttonSubmit').prop( "disabled", true );
+        $('#buttonSubmit').prop( "disabled", true );
         var take = document.getElementById('take_id').value;
 		if (take == '') {
 			alert('กรุณาเลือกประเภทการเบิก');
 			$('#buttonSubmit').prop( "disabled", false );
 		}else{
 			$('#form').submit();
-		}
+        }
 	}
 
     $(document).on("click", ".bt-type-search", function () {
@@ -174,7 +176,6 @@
                 var name = $(this).find('td').eq(1).text();
                 var amount = $(this).find('td').eq(2).text();
                 var unit = $(this).find('td').eq(3).text();
-                // var unit = $(this).find('.unit_name').val();
 
                 addTable(good_id,coil_code,code,name,amount,unit,warehouse_good_id);
             }

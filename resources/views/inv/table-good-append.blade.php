@@ -43,21 +43,21 @@
                                 </td>
                                     <input type="hidden" name="good_id[]" value="{{ $requisitionGood->good->id }}">
                                 </td>
-                                <td><input type="text" name="edit_amount[]" value="{{ $requisitionGood->amount }}">
+                                <td><input type="text" name="amount[]" value="{{ $requisitionGood->amount }}">
                                 </td>
                                 <td>{{ $requisitionGood->good->unit->name }}
-                                    <input type="hidden" name="good_unit_id[]" value="{{ $requisitionGood->good->unit->id }}">
+                                    <input type="hidden" name="unit_id[]" value="{{ $requisitionGood->good->unit->id }}">
                                 </td>
                                 <td>
                                     {{ $requisitionGood->warehouseGoodBalance->sum('amount') }}
-                                    <input type="hidden" name="good_balance_amount[]" value="{{ $requisitionGood->warehouseGoodBalance->amount }}"></td>
+                                    <input type="hidden"  value="{{ $requisitionGood->warehouseGoodBalance->amount }}"></td>
                                 <td style="text-align: center;">
                                     <button type="button" name="button" class="btn btn-danger" onClick="deleteRow(this)">ลบ
                                     </button>
                                 </td>
                             </tr>
                         @endforeach
-                        @else
+
 
                         @endif
                     </tbody>
@@ -66,4 +66,4 @@
         </div>
     </div>
 </div>
-@include('inv.modal-good-select')
+{{-- @include('inv.modal-good-select') --}}

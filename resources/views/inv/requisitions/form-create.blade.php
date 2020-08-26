@@ -17,60 +17,61 @@
     </div>
 </div>
 <div class="row wrapper wrapper bg-white animated fadeInRight">
-    <div class="ibox" style="margin-top: 15px;">
-        <form action="{{ route('inv.save-store') }}" method="POST" id="form" class="form-horizontal">
-            @csrf
-            <div class="ibox-content col-lg-12">
-                <div class="row" style="margin-bottom: 10px;">
-                    <div class="col-lg-4">
-                        <h4>วันที่เอกสาร :: {{ $document = date("d/m/Y") }}</h4>
-                            <input type="hidden" name="document_at" value="{{ $document }}">
+    <form action="{{ route('inv.save-store') }}" method="POST" id="form" class="form-horizontal">
+        @csrf
+        <div class="ibox">
+            <div class="ibox-content animated fadeInRight">
+                <div class="row" style="margin-bottom: 5px">
+                    <h4><b>วันที่เอกสาร :: {{ $document = date("d/m/Y") }}</b></h4>
+                </div>
+                <div class="row" style="margin-left: 10%">
+                    <div class="row col-sm-11" style="margin-top: 5px;">
+                        <input type="hidden" name="document_at" value="{{ $document }}">
                     </div>
-                    <div class="col-lg-4">
-                        {{-- <label>คลังเก็บสินค้า ::
-                            {{ $warehouse_name = session('warehouse')['name'] }}
-                        </label> --}}
-                        {{-- {{ $warehouse_id = session('warehouse')['id'] }} --}}
+                    <div class="row col-sm-11" style="margin-top: 5px;">
                         <input type="hidden" name="warehouse_id" value="{{ $warehouse_id = session('warehouse')['id'] }}">
                     </div>
-                    <div class="col-lg-4">
+                    <div class="row col-sm-11" style="margin-top: 5px;">
                         {{-- ผู้บันทึก :: {{ auth()->user()->name }} --}}
                         <input type="hidden" name="user_create" value="{{ auth()->user()->id }}">
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="ibox wrapper wrapper bg-white animated fadeInRight">
-                            {{-- Table Good Append  --}}
-                            @include('inv.table-good-append')
-
-                            @include('inv.modal-good-select')
-                        </div>
+                    <div class="row col-sm-11" style="margin-top: 5px;">
+                        <b>ประเภทการเบิก <font color="red">*</font></b>
+                    </div>
+                    <div class="row col-sm-11" style="margin-top: 5px;">
+                        <select class="form-control" name="take_id" id="take_id" style="margin-top: 5px;">
+                            <option value="">--- ประเภทการเบิก ---</option>
+                            @foreach ($takes as $take)
+                                    <option value="{{ $take->id }}">{{ $take->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="row col-sm-11" style="margin-top: 3%">
+                        <span class="pull-right">
+                            <li class="active">
+                                <a type="button" class="btn btn-primary" name="btn_GoodModal" onclick="getGoodModal()">เพิ่มสินค้า</a>
+                            </li>
+                        </span>
                     </div>
                 </div>
-                <div class="row" style="margin-top: 30px;">
-                    <span style="background-color: white;">
-                        <h4><font color="black">ประเภทการเบิก / หมายเหตุ</font></h4>
-                    </span><br>
-                    <label class="col-lg-12">ประเภทการเบิก <font color="red">*</font></label><br>
-                    <select class="form-control" name="take_id" id="take_id">
-                        <option value="">--- ประเภทการเบิก ---</option>
-                        @foreach ($takes as $take)
-                                <option value="{{ $take->id }}">{{ $take->name }}</option>
-                        @endforeach
-                    </select><br>
-                    <label class="col-lg-12">หมายเหตุ</label><br>
-                        <textarea style="width: 100%" name="detail"  cols="122" rows="6"></textarea>
-                    <br>
-                    <span class="pull-right">
-                        <button type="button" onclick="onSubmitRequisition()" id="buttonSubmit" class="btn btn-primary">บันทึก</button>
-                        <button class="btn btn-danger waves-effect ajaxify" type="button"
-                        onclick="location.href='{{ route('inv.index') }}'">ยกเลิก</button>
-                    </span>
+            </div>
+            <div class="ibox-content animated fadeInRight">
+                <div>
+                    @include('inv.table-good-append')
+                    @include('inv.modal-good-select')
+                </div>
+                <div style="margin-top: 3%">
+                    <h4><font color="black">หมายเหตุ</font></h4>
+                    <textarea style="width: 100%" name="detail"  cols="122" rows="6"></textarea>
+                </div><br>
+                <div class="pull-right">
+                    <button type="button" onclick="onSubmitRequisition()" id="buttonSubmit" class="btn btn-primary">บันทึก</button>
+                    <button class="btn btn-danger waves-effect ajaxify" type="button"
+                    onclick="location.href='{{ route('inv.index') }}'">ยกเลิก</button>
                 </div>
             </div>
-        </form>
-    </div>
+        </div>
+    </form>
 </div>
 
 {{-- Table Show Good Select Append --}}
@@ -78,21 +79,24 @@
 
 @endsection
 @section('script')
+<script src="/js/plugins/dataTables/datatables.min.js"></script>
 <script type="text/javascript">
+
     var type_id = "all";
         var warehouse_name = $('#warehouse_id').val();
         var countModal = true;
         var tableSearch;
+
         function getGoodModal() {
             if(countModal){
                     tableSearch = $('#tableGood').DataTable({
-                        pageLength: 15,
+                        pageLength: 25,
+                        responsive: true,
                         autoWidth: true,
                         searching: true,
                         "bInfo": false,
                         ordering: true,
                         "bLengthChange": false,
-                        responsive: true,
                         processing: true,
                         ajax: {
                             url: "{{ route('inv.search-goods') }}",
@@ -115,7 +119,6 @@
                 }
             $('#goodModal').modal('show');
     }
-
     function onSubmitRequisition(button) {
         $('#buttonSubmit').prop( "disabled", true );
         var take = document.getElementById('take_id').value;
@@ -126,16 +129,13 @@
 			$('#form').submit();
         }
 	}
-
     $(document).on("click", ".bt-type-search", function () {
         type_id = $(this).data('type_id');
         reloadTableSearch();
     });
-
     function reloadTableSearch() {
         tableSearch.ajax.reload();
     }
-
     function showAlert(message) {
         return swal({
             title: "ขออภัย",
@@ -143,12 +143,10 @@
             type: 'warning',
         });
     }
-
     $('#check-sku-all').on('click', function () {
         var rows = $(this).closest('table');
         $('td input:checkbox', rows).prop('checked', this.checked);
     });
-
     $('#selectProduct').on('click', function () {
         tr = $('#tableGood').find('tbody').find('tr');
         tr.each(function () {
@@ -160,17 +158,14 @@
                 var name = $(this).find('td').eq(1).text();
                 var amount = $(this).find('td').eq(2).text();
                 var unit = $(this).find('td').eq(3).text();
-
                 addTable(good_id,coil_code,code,name,amount,unit,warehouse_good_id);
             }
         });
         $('input[type=checkbox]').prop('checked', false);
         $('#goodModal').modal('hide');
     });
-
     function addTable(good_id,coil_code,code,name,amount,unit,warehouse_good_id) {
         name = decodeURIComponent(name).replace(/\+/g, ' ');
-
         var addRow = $(' .addTr ').clone(true);
             addRow.removeClass(' addTr ');
             addRow.find(' .warehouse_good_id ').val(warehouse_good_id);
@@ -179,20 +174,16 @@
             addRow.find(' .good_id ').val(good_id);
             addRow.find(' .amount ').val(0);
             addRow.find(' .good_name ').text(name);
-            addRow.find(' .unit_name ').text(unit);
+            addRow.find(' .unit_id ').text(unit);
             addRow.find(' .amount_in_warehouse ').text(amount);
             $('#goodAppend').append(addRow);
     }
-
      function deleteRow(r) {
         var row = r.parentNode.parentNode;
         row.remove();
     }
-
-
 	amount_limit = [];
 	ratio_cost = [];
-
 	function displayNumbers() {
 		var numbers = 5; // replace 9 with your desire number
 		var r = '';
@@ -201,7 +192,6 @@
 		}
 		return r;
 	}
-
 	function formatNumber(number) {
 		var number = number.toFixed(2) + '';
 		var x = number.split('.');
@@ -213,9 +203,7 @@
 		}
 		return x1 + x2;
 	}
-
 	function addRow() {
-
 		var row = displayNumbers();
 		var num = $('tr[data-attr=row]').length;
 		num++;
@@ -240,34 +228,22 @@
 		$('#goodAppend').append(html);
 		$('input[data-type=number]').number(true, 0);
 	}
-
 	function deleteGoods(row) {
-
 		var amount = $('#goods_amount_row_' + row + '').val();
-
 		var result_final = $('#goods_amount_real_final').val();
-
 		var result_final_2 = parseInt(result_final) - parseInt(amount);
-
 		var result_sum_format = formatNumber(parseInt(result_final) - parseInt(amount));
-
 		for (i = 1; i < 4; i++) {
 			$('#goods_amount_all_' + i + '').val(result_sum_format);
 		}
-
 		$('#goods_amount_all_final').val(result_sum_format);
-
 		$('tr[data-id=' + row + ']').remove();
-
 		$('#goods_amount_real_final').val(result_final_2)
-
 	}
-
 	function totalCost(row) {
 		var amount = +$('#goods_number_' + row).val();
 		var sum = 0;
 		var i = 0;
-
 		for (i = 0; i < amount_limit[row].length; i++) {
 			if (amount <= amount_limit[row][i]) {
 				sum = amount * ratio_cost[row][i];
@@ -278,7 +254,6 @@
 				amount = amount - amount_limit[row][i];
 			}
 		}
-
 		if (amount == 0) {
 			$('#cost_' + row).val(sum.toFixed(2));
 		} else {
@@ -286,7 +261,6 @@
 			$('#goods_number_' + row).val(0.00);
 		}
 	}
-
 	function showModal(row) {
 		var rows = "";
 		$("#tbodyratio").empty();
@@ -305,12 +279,10 @@
 			i = i + 1;
 			rows = addModal(rows, amount, i);
 		}
-
 		rows += "<tr><td colspan='2' style='font-weight:bold;'>รวม</td><td>" + sum + "</td></tr>";
 		$(rows).appendTo("#showRatio tbody");
 		$('#ratioModal').modal('show');
 	}
-
 	function addModal(rows, amount, i) {
 		if (!!amount_limit[row][i]) {
 			if (amount <= amount_limit[row][i]) {
@@ -332,6 +304,5 @@
 			$('#goods_number_' + row).val('0.00');
 		}
 	}
-
 </script>
 @endsection

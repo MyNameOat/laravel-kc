@@ -5,90 +5,79 @@
 @section('content')
 
 <div class="row">
-    <div class="row wrapper wrapper bg-white animated fadeInRight">
-        <div class="ibox-title" style="height:120px;">
-            <div class="col-lg-6">
-                <span><h2>ใบเบิกสินค้า</h2>
-                <span>หน้าหลัก/ใบเบิกทั้งหมด</span>
-            </div>
-            <div class="col-lg-6"><br>
-                <span class="pull-right">
-
-                </span>
-            </div>
+    <div class="ibox wrapper wrapper bg-white animated fadeInRight">
+        <div class="ibox-title" style="height: 120px; margin-top: 5px;">
+            <span><h2>แก้ไขใบเบิกสินค้า</h2></span>
+            <ol class="breadcrumb">
+                <li class="breadvrumb-item"><a href="{{ route('inv.index') }}">หน้าหลัก</a></li>
+                /
+                <strong class="breadvrumb-item active" style="margin-top: 10px;">รายละเอียด</strong>
+            </ol>
         </div>
     </div>
 </div>
 <div class="row wrapper wrapper bg-white animated fadeInRight">
-    <div class="ibox" style="margin-top: 30px;">
-        <form action="{{ route('inv.update-store') }}"  method="POST">
-            @csrf
-            @foreach ($requisitions as $requisition)
-                <div class="ibox-content col-lg-12">
-                    <div class="row" style="margin-bottom: 20px;">
-                        <div class="col-lg-12">
-                            <span>
-                                <h2>ใบเบิกสินค้า เลขที่ ({{ $requisition->code }})</h2>
-                                <input type="hidden" name="requisition_id" value="{{ $requisition->id }}">
-                            </span>
+    <form action="{{ route('inv.update-store') }}"  method="POST">
+        @csrf
+        <div class="ibox">
+            <div class="ibox-content">
+                @foreach ($requisitions as $requisition)
+                    <div class="row">
+                        <span>
+                            <h3><b>ใบเบิกสินค้า เลขที่ ({{ $requisition->code }})</b></h3>
+                            <input type="hidden" name="requisition_id" value="{{ $requisition->id }}">
+                        </span>
+                    </div>
+                    <div class="row"  style="margin-left: 10%;">
+                        <div class="row col-md-10" style="margin-top: 5px;">วันที่เอกสาร ::
+                            {{ $document_at  = date("d/m/Y") }}
+                            <input type="hidden" name="document_at" value="{{ $document_at  }}">
                         </div>
-                        <div class="col-lg-4">
 
+                        <div class="row col-md-10" style="margin-top: 5px;">คลังเก็บสินค้า :: {{ $requisition->warehouse->name }}
+                            <input type="hidden" name="warehouse_id" value="{{ $requisition->warehouse->id }}">
                         </div>
-                        <div class="col-lg-4">
-                            <label>วันที่เอกสาร ::
-                                {{ $document_at  = date("d/m/Y") }}
-                                <input type="hidden" name="document_at" value="{{ $document_at  }}">
-                            </label><br>
-                            <label>คลังเก็บสินค้า :: {{ $requisition->warehouse->name }}
-                                <input type="hidden" name="warehouse_id" value="{{ $requisition->warehouse->id }}">
-                            </label><br>
+
+                        <div class="row col-md-10" style="margin-top: 5px;">
                             ผู้บันทึก ::{{ $requisition->createUser->name }}
                             <input type="hidden" name="user_id" value="{{ $requisition->createUser->id }}" readonly>
                         </div>
-                        <div class="col-lg-4">
-
+                    </div>
+                    <div class="row" style="margin-top: 1%">
+                        <div class="ibox-content">
+                            @include('inv.table-good-append')
+                            @include('inv.modal-good-select')
                         </div>
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="ibox wrapper wrapper bg-white animated fadeInRight">
-                                    {{-- Table Good Append  --}}
-                                    @include('inv.table-good-append')
-                                    {{-- Modal Select Good --}}
-                                    @include('inv.modal-good-select')
-                                </div>
-                            </div>
+                        <div class="row col-md-10" style="margin-top: 5px;">
+                            <b>ประเภทการเบิก <font color="red">*</font></b>
                         </div>
-                        <div class="col-lg-12" style="margin-top: 30px;">
-                            <span>
-                                <h4>ประเภทการเบิก / หมายเหตุ</h4>
-                            </span><br>
-                            <label>ประเภทการเบิก <font color="red">*</font></label><br>
-
+                        <div class="row col-md-10" style="margin-top: 5px;">
                             <select class="form-control" id="take_id" name="take_id" value="{{ $requisition->take->id }}">
                                     <option value="{{ $requisition->take->id }}">-- {{ $requisition->take->name }} --</option>
                                 @foreach ($takes as $take)
                                     <option value="{{ $take->id }}">{{ $take->name }}</option>
                                 @endforeach
-                            </select><br>
-
-                            <label>หมายเหตุ</label><br>
+                            </select>
+                        </div>
+                        <div class="row col-md-10" style="margin-top: 5px;">
+                            <h4><font color="black">หมายเหตุ</font></h4>
+                        </div>
+                        <div>
                             <textarea style="width: 100%" name="detail" cols="122" rows="6"
                                 value="{{ $requisition->detail }}">{{ $requisition->detail }}
                             </textarea>
-
-                            <span class="pull-right">
-                                {{-- <button type="button" onclick="onSubmitRequisition()" id="buttonSubmit" class="btn btn-primary">บันทึก</button> --}}
-                                <button type="submit" class="btn btn-primary waves-effect">บันทึก</button>
-                                <button class="btn btn-danger waves-effect ajaxify" type="button"
-                                onclick="location.href='{{ route('inv.approve-detail', $requisition->id) }}'">ยกเลิก</button>
-                            </span>
+                        </div><br>
+                        <div class="pull-right">
+                            {{-- <button type="button" onclick="onSubmitRequisition()" id="buttonSubmit" class="btn btn-primary">บันทึก</button> --}}
+                            <button type="submit" class="btn btn-primary waves-effect">บันทึก</button>
+                            <button class="btn btn-danger waves-effect ajaxify" type="button"
+                            onclick="location.href='{{ route('inv.approve-detail', $requisition->id) }}'">ยกเลิก</button>
                         </div>
                     </div>
-                </div>
-            @endforeach
-        </form>
-    </div>
+                @endforeach
+            </div>
+        </div>
+    </form>
 </div>
 
 {{-- Table Show Good Select Append --}}
@@ -96,7 +85,15 @@
 
 @endsection
 @section('script')
+<script src="/js/plugins/dataTables/datatables.min.js"></script>
 <script type="text/javascript">
+
+    $(function(){
+        $('.table').dataTable({
+            pageLength: 25,
+            responsive: true,
+        });
+    });
 
     var type_id = "all";
         var warehouse_id = $('#warehouse_id').val();

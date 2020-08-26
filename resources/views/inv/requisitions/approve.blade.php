@@ -19,9 +19,10 @@
                             <th>เลขที่เอกสาร</th>
                             <th>วันที่เอกสาร</th>
                             <th>วัตถุประสงค์การเบิก</th>
-                            <th>ผู้บันทึก</th>
-                            <th>ผู้อนุมัติ</th>
-                            <th></th>
+                            <th class="text-center" width="8%">ผู้บันทึก</th>
+                            <th class="text-center" width="10%">ผู้อนุมัติ</th>
+                            <th class="text-center" width="10%">รายละเอียด</th>
+                            <th class="text-center" width="7%">ลบ</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -56,6 +57,9 @@
                                 <a href="{{ route('inv.approve-detail', $requisition->id)  }}"
                                 class="btn btn-info btn-xs">แสดงรายละเอียด</a>
                             </td>
+                            <td>
+                                <button class="btn btn-danger btn-xs delete_user" data-id="{{ $requisition->id }}">Delete {{ $requisition->id }}</button>
+                            </td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -67,13 +71,13 @@
 
 @endsection
 @section('script')
-<script>
-
-    $('#warehouse').change(function () {
-		var txt = $("#warehouse option:selected").text();
-		var res = txt.split("_", 1);
-		$("#code").val(res + 'xxxx-xxx');
-	});
-
+<script src="/js/plugins/dataTables/datatables.min.js"></script>
+<script type="text/javascript">
+    $(function(){
+        $('.table').dataTable({
+            pageLength: 25,
+            responsive: true,
+        });
+    });
 </script>
 @endsection

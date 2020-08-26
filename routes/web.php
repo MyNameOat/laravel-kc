@@ -42,25 +42,23 @@ use Illuminate\Support\Facades\Auth;
 
     Route::prefix('inv')->name('inv.')->group(function () {
 
-        Route::get('/dashboard', 'Inv\RequisitionBillsController@dashboard')->name('dashboard');
-        Route::get('/requisition', 'Inv\RequisitionBillsController@index')->name('index');
-        Route::get('/requisition/store-detail/id/{id_bill}', 'Inv\RequisitionBillsController@reportStoreDetail')->name('report-store-detail');
+        Route::get('/dashboard', 'Inv\RequisitionController@dashboard')->name('dashboard');
+        Route::get('/requisition', 'Inv\RequisitionController@index')->name('index');
+        Route::get('/requisition/store-detail/id/{id_bill}', 'Inv\RequisitionController@reportStoreDetail')->name('report-store-detail');
 
+        Route::post('/requisition/search-goods', 'Inv\RequisitionController@searchGoods')->name('search-goods');
+        Route::get('/requisition/form-create', 'Inv\RequisitionController@formCreate')->name('form-create');
+        Route::post('/requisition/save-store', 'Inv\RequisitionController@saveStore')->name('save-store');
+        Route::get('/requisition/form-edit/id/{id_bill}', 'Inv\RequisitionController@formEdit')->name('form-edit');
+        Route::post('/requisition/edit-store', 'Inv\RequisitionController@updateStore')->name('update-store');
+        Route::get('/requisition/delete-store/id/{id_bill}', 'Inv\RequisitionController@deleteStore')->name('delete-store');
 
-        Route::post('/requisition/search-goods', 'Inv\RequisitionBillsController@searchGoods')->name('search-goods');
-        Route::get('/requisition/form-create', 'Inv\RequisitionBillsController@formCreate')->name('form-create');
-        Route::post('/requisition/save-store', 'Inv\RequisitionBillsController@saveStore')->name('save-store');
-        Route::get('/requisition/form-edit/id/{id_bill}', 'Inv\RequisitionBillsController@formEdit')->name('form-edit');
-        Route::post('/requisition/edit-store', 'Inv\RequisitionBillsController@updateStore')->name('update-store');
-        Route::get('/requisition/delete-store/id/{id_bill}', 'Inv\RequisitionBillsController@deleteStore')->name('delete-store');
+        Route::get('/requisition/approve', 'Inv\RequisitionController@approve')->name('approve');
+        Route::get('/requisition/approve-detail/id/{id_bill}', 'Inv\RequisitionController@approveDetail')->name('approve-detail');
+        Route::get('/requisition/approve/check-status/id/{id_bill}/no', 'Inv\RequisitionController@approveCheckStatusNo')->name('approve-check-status-no');
+        Route::get('/requisition/approve/check-status/id/{id_bill}/off', 'Inv\RequisitionController@approveCheckStatusOff')->name('approve-check-status-off');
 
-
-        Route::get('/requisition/approve', 'Inv\RequisitionBillsController@approve')->name('approve');
-        Route::get('/requisition/approve-detail/id/{id_bill}', 'Inv\RequisitionBillsController@approveDetail')->name('approve-detail');
-        Route::get('/requisition/approve/check-status/id/{id_bill}/no', 'Inv\RequisitionBillsController@approveCheckStatusNo')->name('approve-check-status-no');
-        Route::get('/requisition/approve/check-status/id/{id_bill}/off', 'Inv\RequisitionBillsController@approveCheckStatusOff')->name('approve-check-status-off');
-
-        Route::get('/requisition/report-status/config', 'Inv\RequisitionBillsController@reportRequisitions')->name('report-status-config');
-
+        Route::get('/requisition/report-status/config', 'Inv\RequisitionController@reportRequisitions')->name('report-status-config');
+        Route::post('/requisition/report-status/delete/{id}', 'Inv\RequisitionController@reportStatusDelete')->name('report-status-delete');
     });
 });

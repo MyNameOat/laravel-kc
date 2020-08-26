@@ -1,83 +1,92 @@
-<?php
-    use Crabon\Carbor;
-?>
-@extends('layouts-inv.app')
-@section('content')
-
-
 <div class="row">
-    <div class="ibox wrapper wrapper bg-white animated fadeInRight">
-        <div class="ibox-title" style="height: 120px; margin-top: 5px;">
-            <span><h2>ใบเบิกสินค้า</h2></span>
-            <ol class="breadcrumb">
-                <li class="breadvrumb-item"><a href="{{ route('inv.index') }}">หน้าหลัก</a></li>
-                /
-                <strong class="breadvrumb-item active" style="margin-top: 10px;">สร้างใบเบิกสินค้า</strong>
-            </ol>
+    <div class="ibox">
+        <div class="ibox-title">
+            <h3>สร้างใบเบิกสินค้า</h3>
+            <button type="button" class="btn btn-primary" id="submitButton">บันทึก</button>
+            <a href="{{ route('inv.index') }}" class="btn btn-default waves-effect">กลับ</a>
+        </div>
+    </div>
+    <div class="ibox-content">
+        <div class="row">
+            <div class="col-lg-3">
+                <label>คลังเก็บสินค้า</label>
+                <div class="fg-line">
+                    <input type="hidden" value="{{ session('warehouse')['id'] }}" name="warehouse_id">
+                    <input type="text" value="{{ session('warehouse')['name'] }}" class="form-control" readonly>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <label>เลขที่ใบเอกสาร</label>
+                <div class="fg-line">
+                    @if(isset($requisition))
+                        <input type="text" value="{{ $requisition->code }}" class="form-control" readonly>
+                    @else
+                        <input type="text" value="{{ session('warehouse')['code'] }}RQxxxx-xxx" class="form-control" readonly>
+                    @endif
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <label>วันที่เอกสาร</label>
+                <div class="input-group">
+                    <div class="fg-line">
+                        <input type="text" name="document_at" value="{{ isset($requisition) ? $requisition->document_at->format('d/m/Y') : \Carbon\Carbon::today()->format('d/m/Y') }}" class="form-control" data-type="date" required>
+                    </div>
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <label>เลือกประเภทการเบิก</label>
+                <div class="fg-line">
+                    <select name="take_id" class="form-control">
+                        @foreach($takes as $take)
+                            <option value="{{ $take->id }}" {{ isset($requisition) && $requisition->take_id == $take->id ? 'selected' : '' }}>{{ $take->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div><br>
+
+    <div class="row col-lg-12">
+        <span class="pull-right">
+            <li class="active">
+                <a type="button" class="btn btn-primary" name="btn_GoodModal" onclick="getGoodModal()">เพิ่มสินค้า</a>
+            </li>
+        </span>
+        <div class="ibox wrapper wrapper bg-white animated fadeInRight">
+            @include('inv.table-good-append')
+
+            @include('inv.modal-good-select')
+        </div>
+    </div>
+
+    <div class="ibox">
+        <div class="ibox-content">
+            <div class="row">
+                <div class="col-lg-12">
+                    <label>หมายเหตุ</label>
+                    <textarea name="detail" cols="50" rows="10" class="form-control">
+                        @if (isset($requisition))
+                            {{ $requisition->detail }}
+                        @endif
+                    </textarea>
+                    <span class="pull-right" style="margin-top: 20px;">
+                        <button type="submit" onclick="onSubmitRequisition()" id="buttonSubmit" class="btn btn-primary">บันทึก</button>
+                        <button class="btn btn-danger waves-effect ajaxify" type="button"
+                        onclick="location.href='{{ route('inv.index') }}'">ยกเลิก</button>
+                        <br><br>
+                        {{-- <button type="button" class="btn btn-primary" id="submitButton">บันทึก</button>
+                        <a href="{{ route('inv.index') }}" class="btn btn-default waves-effect">กลับ</a> --}}
+                    </span>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-<div class="row">
-    <form action="{{ route('inv.save-store') }}" method="POST" id="form" class="form-horizontal">
-        @csrf
-        {{-- Form Detail buill lading --}}
-        <div class="row col-lg-12">
-            <div class="ibox wrapper wrapper bg-white animated fadeInRight">
-                {{-- Table Good Append  --}}
-                @include('inv.table-good-append')
 
-                {{-- Modal Type Select Goods --}}
-                @include('inv.modal-good-select')
-            </div>
-        </div>
-        <div class="ibox wrapper wrapper bg-white animated fadeInRight" style="margin-top: 30px;">
-            <div class="ibox-content col-lg-12">
-                <span class="pull-right">
-                    <label>วันที่เอกสาร ::
-                        {{ $document_at  = date("d/m/Y") }}
-                        <input type="hidden" name="document_at" value="{{ $document_at  }}">
-                    </label><br>
-                    <label>คลังเก็บสินค้า ::
-                        {{ $warehouse_id = session('warehouse')['name'] }}
-                        <input type="hidden" name="warehouse_id" value="{{ $warehouse_id }}">
-                    </label><br>
-                    ผู้บันทึก :: {{ auth()->user()->name }}
-                    <input type="hidden" name="user_create" value="{{ auth()->user()->id }}">
-                </span>
-                <span style="background-color: white;">
-                    <h4><font color="red">ประเภทการเบิก / หมายเหตุ</font></h4>
-                </span><br>
-                <label class="col-lg-12">ประเภทการเบิก <font color="red">*</font></label><br>
-                <select class="form-control" name="take_id" id="take_id">
-                    <option value="">--- ประเภทการเบิก ---</option>
-                    @foreach ($take_lists as $take)
-                            <option value="{{ $take->id }}">{{ $take->name }}</option>
-                    @endforeach
-                </select><br>
-                <label class="col-lg-12">หมายเหตุ</label><br><center>
-                    <textarea style="width: 100%" name="detail" id="detail" cols="122" rows="6"></textarea>
-                </center><br>
-                <p>
-                    <span class="pull-right">
-                        <button type="button" onclick="onSubmitRequisition()" id="buttonSubmit" class="btn btn-primary">บันทึก</button>
-                        <button class="btn btn-danger waves-effect ajaxify" type="button"
-                        onclick="location.href='{{ route('inv.index') }}'">ยกเลิก</button>
-                    </span>
-                </p>
-            </div>
-        </div>
-    </form>
-</div>
-
-{{-- Table Show Good Select Append --}}
-@include('inv.extra-good')
-
-@endsection
-@section('script')
 <script type="text/javascript">
-
     var type_id = "all";
-        var warehouse_id = $('#warehouse_id').val();
+        var warehouse_name = $('#warehouse_id').val();
         var countModal = true;
         var tableSearch;
         function getGoodModal() {
@@ -114,14 +123,14 @@
     }
 
     function onSubmitRequisition(button) {
-		$('#buttonSubmit').prop( "disabled", true );
+        $('#buttonSubmit').prop( "disabled", true );
         var take = document.getElementById('take_id').value;
 		if (take == '') {
 			alert('กรุณาเลือกประเภทการเบิก');
 			$('#buttonSubmit').prop( "disabled", false );
 		}else{
 			$('#form').submit();
-		}
+        }
 	}
 
     $(document).on("click", ".bt-type-search", function () {
@@ -157,7 +166,6 @@
                 var name = $(this).find('td').eq(1).text();
                 var amount = $(this).find('td').eq(2).text();
                 var unit = $(this).find('td').eq(3).text();
-                // var unit = $(this).find('.unit_name').val();
 
                 addTable(good_id,coil_code,code,name,amount,unit,warehouse_good_id);
             }
@@ -332,7 +340,6 @@
 	}
 
 </script>
-@endsection
 
 
 

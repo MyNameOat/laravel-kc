@@ -88,9 +88,13 @@
 
 @endsection
 @section('script')
-<script>
-
-    var tableReportBillDetall = $('#tableReportBillDetall').DataTable();
-
+<script src="/js/plugins/dataTables/datatables.min.js"></script>
+<script type="text/javascript">
+    $(function(){
+        $('.table').dataTable({
+            pageLength: 25,
+            responsive: true,
+        });
+    });
 </script>
 @endsection

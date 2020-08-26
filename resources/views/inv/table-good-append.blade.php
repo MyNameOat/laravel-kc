@@ -1,11 +1,12 @@
+
 <div class="tabs-container" style="margin-top: 40px;">
     <ul class="nav nav-tabs" role="tablist">
         <li class="active"><a href="#detail" aria-controls="detail" role="tab" data-toggle="tab">รายการสินค้า</a></li>
-        <span class="pull-right">
+        {{-- <span class="pull-right">
             <li class="active">
                 <a type="button" class="btn btn-primary" name="btn_GoodModal" onclick="getGoodModal()">เพิ่มสินค้า</a>
             </li>
-        </span>
+        </span> --}}
     </ul>
     <div class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="detail">
@@ -23,41 +24,41 @@
                     </thead>
                     <tbody id="goodAppend">
                         @if(isset($requisitionGoods))
-                        @foreach($requisitionGoods as $key => $requisitionGood)
-                            <tr>
-                                <input type="hidden" name="warehouse_good_id[]" value="{{ $requisitionGood->warehouseGood->id }}">
-                                <td>
-                                    @if($requisitionGood->good->type->is_coil == 1)
-                                    {{ $requisitionGood->warehouseGood->coil_code }}
-                                    <input type="hidden" name="wh_good_coil[]" value="{{ $requisitionGood->warehouseGood->coil_code }}">
+                            @foreach($requisitionGoods as $key => $requisitionGood)
+                                <tr>
+                                    <input type="hidden" name="warehouse_good_id[]" value="{{ $requisitionGood->warehouseGood->id }}">
+                                    <td>
+                                        @if($requisitionGood->good->type->is_coil == 1)
+                                        {{ $requisitionGood->warehouseGood->coil_code }}
+                                        <input type="hidden" name="wh_good_coil[]" value="{{ $requisitionGood->warehouseGood->coil_code }}">
 
-                                    @else
-                                    {{ $requisitionGood->good->code }}
-                                    <input type="hidden" name="good_code[]" value="{{ $requisitionGood->good->code }}">
+                                        @else
+                                        {{ $requisitionGood->good->code }}
+                                        <input type="hidden" name="good_code[]" value="{{ $requisitionGood->good->code }}">
 
-                                    @endif
-                                </td>
+                                        @endif
+                                    </td>
 
-                                <td>{{ $requisitionGood->good->name }}
-                                    <input type="hidden" name="good_name[]" value="{{ $requisitionGood->good->name }}">
-                                </td>
-                                    <input type="hidden" name="good_id[]" value="{{ $requisitionGood->good->id }}">
-                                </td>
-                                <td><input type="text" name="amount[]" value="{{ $requisitionGood->amount }}">
-                                </td>
-                                <td>{{ $requisitionGood->good->unit->name }}
-                                    <input type="hidden" name="unit_id[]" value="{{ $requisitionGood->good->unit->id }}">
-                                </td>
-                                <td>
-                                    {{ $requisitionGood->warehouseGoodBalance->sum('amount') }}
-                                    <input type="hidden"  value="{{ $requisitionGood->warehouseGoodBalance->amount }}"></td>
-                                <td style="text-align: center;">
-                                    <button type="button" name="button" class="btn btn-danger" onClick="deleteRow(this)">ลบ
-                                    </button>
-                                </td>
-                            </tr>
-                        @endforeach
-
+                                    <td>{{ $requisitionGood->good->name }}
+                                        <input type="hidden" name="good_name[]" value="{{ $requisitionGood->good->name }}">
+                                    </td>
+                                        <input type="hidden" name="good_id[]" value="{{ $requisitionGood->good->id }}">
+                                    </td>
+                                    <td><input type="text" name="amount[]" value="{{ $requisitionGood->amount }}">
+                                    </td>
+                                    <td>{{ $requisitionGood->good->unit->name }}
+                                        <input type="hidden" name="unit_id[]" value="{{ $requisitionGood->good->unit->id }}">
+                                    </td>
+                                    <td>
+                                        {{ $requisitionGood->warehouseGoodBalance->sum('amount') }}
+                                        <input type="hidden" name="balance_amount[]" value="{{ $requisitionGood->warehouseGoodBalance->sum('amount') }}"></td>
+                                    <td style="text-align: center;">
+                                        <button type="button" name="button" class="btn btn-danger" onClick="deleteRow(this)">ลบ
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @else
 
                         @endif
                     </tbody>
@@ -66,4 +67,13 @@
         </div>
     </div>
 </div>
-{{-- @include('inv.modal-good-select') --}}
+<script src="/js/plugins/dataTables/datatables.min.js"></script>
+<script type="text/javascript">
+
+    $(function(){
+        $('.table').dataTable({
+            pageLength: 25,
+            responsive: true,
+        });
+    });
+</script>

@@ -38,75 +38,80 @@
             </div>
             @endforeach
         </div>
-        <div class="row">
-            @foreach ($requisitions as $requisition)
-                <div class="ibox-content col-lg-12">
-                    <div class="row" style="margin-bottom: 20px;">
-                        <div class="col-lg-4">
-
-                        </div>
-                        <div class="col-lg-4">
+        <div class="row animated fadeInRight" style="margin-top: 1%">
+            <div class="ibox-content form-control">
+                @foreach ($requisitions as $requisition)
+                    <div class="row" style="margin-left: 15%">
+                        <div class="row col-md-10" style="margin-top: 1%">
                             วันที่เอกสาร :: {{ $document_at = $requisition->document_at }}
-                                {{-- {{ $document_at  = date("d/m/Y") }} --}}
-                            <p><input type="hidden" name="document_at" value="{{ $document_at  }}"></p>
-                            <p>เบิกเพื่อ :: {{ $requisition->take->name }}</p>
-                            <p>หมายเหตุ :: {{ $requisition->detail }}</p>
-                            <p>คลัง :: {{ $requisition->warehouse->name }}</p>
+                            {{-- {{ $document_at  = date("d/m/Y") }} --}}
+                            <input type="hidden" name="document_at" value="{{ $document_at  }}">
+                        </div>
+                        <div class="row col-md-10" style="margin-top: 1%">
+                            เบิกเพื่อ :: {{ $requisition->take->name }}
+                        </div>
+                        <div class="row col-md-10" style="margin-top: 1%">
+                            หมายเหตุ :: {{ $requisition->detail }}
+                        </div>
+                        <div class="row col-md-10" style="margin-top: 1%">
+                            คลัง :: {{ $requisition->warehouse->name }}
+                        </div>
+                        <div class="row col-md-10" style="margin-top: 1%">
                             <input type="hidden" name="warehouse_id" value="{{ $requisition->warehouse->name }}">
-                            <p>ผู้บันทึก :: {{ $user = auth()->user()->name }}</p>
+                            ผู้บันทึก :: {{ $user = auth()->user()->name }}
                             <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
                         </div>
-                        <div class="col-lg-4">
-
-                        </div>
                     </div>
-                </div>
-            @endforeach
+                @endforeach
+            </div>
         </div>
     </div>
 </div>
-<div class="row wrapper wrapper bg-white animated fadeInRight">
-    <div class="ibox">
+<div class="row">
+    <div class="ibox wrapper wrapper bg-white animated fadeInRight">
         <div class="ibox-content">
-            <div class="table-responsive">
-                <table class="table table-responsive" id="tableReportBillDetall">
-                    <thead>
-                        <tr>
-                            <th>รหัสสินค้า</th>
-                            <th>รหัสคอยน์</th>
-                            <th>ชื่อสินค้า</th>
-                            <th>จำนวน</th>
-                            <th>หน่วยนับ</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($requisitionGoods as $key => $requisitionGood)
-                        <tr>
-                            <td>{{ $requisitionGood->good->code }}</td>
-                            <td>
-                                @if($requisitionGood->good->type->is_coil == 1)
-                                {{ $requisitionGood->warehouseGood->coil_code }}
-                                @else
-                                  -
-                                @endif
-                            </td>
-                            <td>{{ $requisitionGood->good->name }}</td>
-                            <td>{{ $requisitionGood->amount }}</td>
-                            <td>{{ $requisitionGood->good->unit->name }}</td>
-                        </tr>
-                         @endforeach
-                    </tbody>
-                </table>
-            </div>
+            <table class="table table-bordered" id="tableReportBillDetall">
+                <thead>
+                    <tr>
+                        <th>รหัสสินค้า</th>
+                        <th>รหัสคอยน์</th>
+                        <th>ชื่อสินค้า</th>
+                        <th>จำนวน</th>
+                        <th>หน่วยนับ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($requisitionGoods as $key => $requisitionGood)
+                    <tr>
+                        <td>{{ $requisitionGood->good->code }}</td>
+                        <td>
+                            @if($requisitionGood->good->type->is_coil == 1)
+                            {{ $requisitionGood->warehouseGood->coil_code }}
+                            @else
+                                -
+                            @endif
+                        </td>
+                        <td>{{ $requisitionGood->good->name }}</td>
+                        <td>{{ $requisitionGood->amount }}</td>
+                        <td>{{ $requisitionGood->good->unit->name }}</td>
+                    </tr>
+                        @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 
 @endsection
 @section('script')
-<script>
+<script src="/js/plugins/dataTables/datatables.min.js"></script>
+<script type="text/javascript">
 
-    var tableReportBillDetall = $('#tableReportBillDetall').DataTable();
-
+    $(function(){
+        $('.table').dataTable({
+            pageLength: 25,
+            responsive: true,
+        });
+    });
 </script>
 @endsection

@@ -87,10 +87,12 @@
         var countModal = true;
         var tableSearch;
 
+
+    //ฟังก์ชั่นค้นหาโดยการยิงอาแจ๊ก
         function getGoodModal() {
             if(countModal){
                     tableSearch = $('#tableGood').DataTable({
-                        pageLength: 25,
+                        pageLength: 10,
                         responsive: true,
                         autoWidth: true,
                         searching: true,
@@ -119,6 +121,9 @@
                 }
             $('#goodModal').modal('show');
     }
+
+
+
     function onSubmitRequisition(button) {
         $('#buttonSubmit').prop( "disabled", true );
         var take = document.getElementById('take_id').value;

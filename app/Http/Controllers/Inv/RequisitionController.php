@@ -111,7 +111,8 @@ class RequisitionController extends Controller
 
         // $pagename = 'รายงานใบเบิกสินค้า';
 
-        return view('inv.requisitions.report-requisition', compact('breadcrumbs', 'pagename', 'whs_lists', 'requisitions', 'warehouse_id', 'start_at', 'end_at'));
+        $warehouse_id = session('warehouse')['id'];
+        return view('inv.requisitions.report-requisition', compact('breadcrumbs', 'pagename', 'whs_lists', 'requisitions', 'warehouse_id'));
     }
 
     public function reportStoreDetail($id_bill){

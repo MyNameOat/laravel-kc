@@ -57,7 +57,7 @@
                             <td class="text-center">
                                 <a href="{{ route('inv.report-store-detail', $requisition->id)  }}"
                                 class="btn btn-info btn-xs">แสดงรายละเอียด</a><br>
-                                <button class="btn btn-danger btn-xs delete_user" data-id="{{ $requisition->id }}">Delete {{ $requisition->id }}</button>
+                                {{-- <button class="btn btn-danger btn-xs delete_user" data-id="{{ $requisition->id }}">Delete {{ $requisition->id }}</button> --}}
                             </td class="text-center">
                             <td width="5%">
                                 <button class="btn btn-danger btn-xs delete_user" data-id="{{ $requisition->id }}">Delete {{ $requisition->id }}</button>

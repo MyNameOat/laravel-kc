@@ -1,2 +1,2 @@
 # laravel-kc
-project update kc laravel framework 
+new skill laravel from kc No.1
